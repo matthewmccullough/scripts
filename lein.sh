@@ -1,0 +1,168 @@
+#!/bin/sh
+
+export LEIN_VERSION="1.3.1"
+
+case $LEIN_VERSION in
+    *SNAPSHOT) SNAPSHOT="YES" ;;
+    *) SNAPSHOT="NO" ;;
+esac
+
+# Make sure classpath is in unix format for manipulating, then put
+# it back to windows format when we use it
+if [ "$OSTYPE" = "cygwin" ] && [ $CLASSPATH != "" ]; then
+    CLASSPATH=`cygpath -up $CLASSPATH`
+fi
+
+if [ $USER = "root" ] && [ "$LEIN_ROOT" = "" ]; then
+    echo "WARNING: You're currently running as root; probably by accident."
+    echo "Press control-C to abort or Enter to continue as root."
+    echo "Set LEIN_ROOT to disable this warning."
+    read
+fi
+
+ORIGINAL_PWD="$PWD"
+while [ ! -r "$PWD/project.clj" ] && [ "$PWD" != "/" ] && [ ! $NOT_FOUND ]
+do
+    cd ..
+    if [ "$(dirname "$PWD")" = "/" ]; then
+        NOT_FOUND=0
+        cd "$ORIGINAL_PWD"
+    fi
+done
+
+if [ "$LEIN_HOME" = "" ]; then
+    LEIN_HOME="$HOME/.lein"
+fi
+
+LEIN_PLUGINS="$(ls -1 lib/dev/*jar 2> /dev/null | tr \\n \:)"
+LEIN_USER_PLUGINS="$(ls -1 $LEIN_HOME/plugins/*jar 2> /dev/null | tr \\n \:)"
+CLASSPATH=$LEIN_USER_PLUGINS:$LEIN_PLUGINS:src/:$CLASSPATH
+LEIN_JAR="$HOME/.m2/repository/leiningen/leiningen/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.jar"
+CLOJURE_JAR="$HOME/.m2/repository/org/clojure/clojure/1.2.0/clojure-1.2.0.jar"
+NULL_DEVICE=/dev/null
+
+# normalize $0 on certain BSDs
+if [ "$(dirname "$0")" = "." ]; then
+    SCRIPT="$(which $(basename "$0"))"
+else
+    SCRIPT="$0"
+fi
+
+# resolve symlinks to the script itself portably
+while [ -h "$SCRIPT" ] ; do
+    ls=`ls -ld "$SCRIPT"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        SCRIPT="$link"
+    else
+        SCRIPT="`dirname "$SCRIPT"`/$link"
+    fi
+done
+
+BIN_DIR="$(dirname "$SCRIPT")"
+
+if [ -r "$BIN_DIR/../src/leiningen/core.clj" ]; then
+    # Running from source checkout
+    LEIN_DIR="$(dirname "$BIN_DIR")"
+    LEIN_LIBS="$(find -H $LEIN_DIR/lib -mindepth 2> /dev/null 1 -maxdepth 1 -print0 | tr \\0 \:)"
+    CLASSPATH="$LEIN_DIR/src:$LEIN_DIR/resources:$LEIN_LIBS:$CLASSPATH:$LEIN_JAR"
+
+    if [ "$LEIN_LIBS" = "" -a "$1" != "self-install" -a ! -r "$LEIN_JAR" ]; then
+        echo "Leiningen is missing its dependencies. Please see \"Building\" in the README."
+        exit 1
+    fi
+else
+    # Not running from a checkout
+    CLASSPATH="$LEIN_JAR:$CLASSPATH"
+
+    if [ ! -r "$LEIN_JAR" -a "$1" != "self-install" ]; then
+        "$0" self-install
+    fi
+fi
+
+HTTP_CLIENT="wget -O"
+if type -p curl >/dev/null 2>&1; then
+    HTTP_CLIENT="curl -f -L -o"
+fi
+
+JAVA_CMD=${JAVA_CMD:-"java"}
+
+# If you're packaging this for a package manager (.deb, homebrew, etc)
+# you need to remove the self-install and upgrade functionality.
+if [ "$1" = "self-install" ]; then
+    echo "Downloading Leiningen now..."
+    LEIN_DIR=`dirname "$LEIN_JAR"`
+    mkdir -p "$LEIN_DIR"
+    LEIN_URL="http://github.com/downloads/technomancy/leiningen/leiningen-$LEIN_VERSION-standalone.jar"
+    $HTTP_CLIENT "$LEIN_JAR" "$LEIN_URL"
+    if [ $? != 0 ]; then
+        echo "Failed to download $LEIN_URL"
+        if [ $SNAPSHOT = "YES" ]; then
+            echo "See README.md for SNAPSHOT build instructions."
+        fi
+        rm $LEIN_JAR
+        exit 1
+    fi
+elif [ "$1" = "upgrade" ]; then
+    if [ $SNAPSHOT = "YES" ]; then
+        echo "The upgrade task is only meant for stable releases."
+        echo "See the \"Hacking\" section of the README."
+        exit 1
+    fi
+    if [ ! -w "$SCRIPT" ]; then
+        echo "You do not have permission to upgrade the installation in $SCRIPT"
+        exit 1
+    else
+        echo "The script at $SCRIPT will be upgraded to the latest stable version."
+        echo -n "Do you want to continue [Y/n]? "
+        read RESP
+        case "$RESP" in
+            y|Y|"")
+                echo
+                echo "Upgrading..."
+                LEIN_SCRIPT_URL="http://github.com/technomancy/leiningen/raw/stable/bin/lein"
+                $HTTP_CLIENT "$SCRIPT" "$LEIN_SCRIPT_URL" \
+                    && chmod +x "$SCRIPT" \
+                    && echo && $SCRIPT self-install && echo && echo "Now running" `$SCRIPT version`
+                exit $?;;
+            *)
+                echo "Aborted."
+                exit 1;;
+        esac
+    fi
+else
+    if [ "$OSTYPE" = "cygwin" ]; then
+        # When running on Cygwin, use Windows-style paths for java
+        CLOJURE_JAR=`cygpath -w "$CLOJURE_JAR"`
+        CLASSPATH=`cygpath -wp "$CLASSPATH"`
+        NULL_DEVICE=NUL
+    fi
+
+    if [ $DEBUG ]; then
+        echo $CLASSPATH
+        echo $CLOJURE_JAR
+    fi
+
+    if ([ "$1" = "repl" ] || [ "$1" = "interactive" ] || [ "$1" = "int" ]) &&
+        [ -z $INSIDE_EMACS ] && [ "$TERM" != "dumb" ]; then
+        # Use rlwrap if it's available, otherwise fall back to JLine
+        RLWRAP=`which rlwrap`
+        if [ $? -eq 1 ]; then
+            JLINE=jline.ConsoleRunner
+            if [ "$OSTYPE" = "cygwin" ]; then
+		JLINE="-Djline.terminal=jline.UnixTerminal jline.ConsoleRunner"
+		CYGWIN_JLINE=y
+            fi
+        fi
+    fi
+
+    # The -Xbootclasspath argument is optional here: if the jar
+    # doesn't exist everything will still work, it will just have a
+    # slower JVM boot.
+    # TODO: add more to the boot classpath
+    test $CYGWIN_JLINE && stty -icanon min 1 -echo
+    exec $RLWRAP $JAVA_CMD -Xbootclasspath/a:"$CLOJURE_JAR" -client $JAVA_OPTS \
+        -cp "$CLASSPATH" $JLINE clojure.main -e "(use 'leiningen.core)(-main)" \
+        $NULL_DEVICE $@
+    test $CYGWIN_JLINE && stty icanon echo
+fi
