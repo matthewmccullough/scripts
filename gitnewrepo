@@ -1,0 +1,6 @@
+#!/bin/bash
+git init $1
+cd $1
+touch README
+git add README
+git commit -m'First commit of empty README'
