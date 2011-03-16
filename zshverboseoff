@@ -1,0 +1,4 @@
+#!/bin/zsh
+ZSHVERBOSE="false"
+export ZSHVERBOSE
+prompt_wunjo_setup
