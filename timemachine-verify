@@ -1,0 +1,3 @@
+cd /Volumes/EXT-ZEUS2TM*/Backups.backupdb/*/Latest/*/
+echo "Current folder on backup disk: $(pwd -P)"
+sudo diff -qr . / 2>&1 | tee ~/Desktop/timemachine-diff.log
