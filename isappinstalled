@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#Ensure we have one argument specified on the CLI
+if [ -z "$1" ]; then ARG_ERR=ERR; fi
+if [ -n "$ARG_ERR" ];
+then
+    echo "Checks if an app (passed as a parameter) is installed/reachable"
+    echo " on this machine by using the 'hash' command."
+    echo "Usage: isappinstalled <appname>"
+    echo "Returns: 0 if is installed, 1 if not installed."
+    exit
+fi
+
+
+hash $1 2>&- || { echo >&2 "I require $1 but it's not installed."; exit 1; }
