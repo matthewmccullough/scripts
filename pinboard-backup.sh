@@ -1,2 +1,2 @@
 #!/bin/sh
-curl https://matthew.mccullough:wrorl-eem-vo@pinboard.in/export/ -o pinboard-`date "+%Y-%m-%d"`.html
+curl https://matthew.mccullough:PASSWORDHERE@pinboard.in/export/ -o pinboard-`date "+%Y-%m-%d"`.html
