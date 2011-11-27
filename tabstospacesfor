@@ -1,0 +1,8 @@
+#!/bin/sh
+#for eachthing in "$1"; do
+for eachthing in `find . -iname \"$1\"`; do
+    echo Backing up: "$eachthing" to "$eachthing.orig"
+    cp $eachthing $eachthing.orig
+    echo Converting: tab2space --unix "$eachthing" "$eachthing"
+    tab2space --unix "$eachthing" "$eachthing"
+done
