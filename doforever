@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#Ensure we have the quantity specified on the CLI
+if [ -z "$2" ]; then ARG_ERR=ERR; fi
+if [ -z "$1" ]; then ARG_ERR=ERR; fi
+if [ -n "$ARG_ERR" ];
+then
+    echo "Usage: <delayinseconds> <command>"
+    exit
+fi
+
+delay=$1
+commandtorun=$2
+
+while true;
+  do $commandtorun
+  sleep $delay
+done
+
+# The same thing can be written as a one-liner
+# while true; do echo ./genoutput && sleep 15; done
