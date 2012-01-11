@@ -1,4 +1,10 @@
 #!/bin/sh
 
 # Convert OrgMode to Markdown
-cat $1 | sed s/^** /    */  | sed s/^*** /        */| sed s/^**** /            */| markdown
+export MARKDOWNNAME="`echo "$1" | sed s/orgmode/markdown/`"
+export HTMLNAME="`echo "$1" | sed s/orgmode/html/`"
+
+cat "$1" | sed "s/^\*\* /    \* /"  \
+         | sed "s/^\*\*\* /        \* /" \
+         | sed "s/^\*\*\*\* /            \* /" > "$MARKDOWNNAME"
+cat "$MARKDOWNNAME" | markdown > "$HTMLNAME"
