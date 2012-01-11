@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Convert OrgMode to Markdown
+cat $1 | sed s/^** /    */  | sed s/^*** /        */| sed s/^**** /            */| markdown
