@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Git Remove (from version control) any file that is covered by the ignore patterns and exists on the filesystem. Could be improved to further check the file exists on the git filesystem too.
+
+for eachthing in `git ls-files --others --ignored --exclude-standard`; do if [ -e "$eachthing" ]; then git rm $eachthing; fi; done
