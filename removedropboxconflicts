@@ -1,0 +1,5 @@
+find . -iname '*conflicted copy*' -print
+
+read -p "Press [Enter] to move these files to the trash or Ctrl C to abort..."
+
+find . -iname '*conflicted copy*' -print -exec echo trash \"{}\" \;
