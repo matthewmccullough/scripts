@@ -1,5 +1,9 @@
+#!/bin/sh
+
 find . -iname '*conflicted copy*' -print
 
+echo "\n"
 read -p "Press [Enter] to move these files to the trash or Ctrl C to abort..."
 
-find . -iname '*conflicted copy*' -print -exec echo trash \"{}\" \;
+echo "\n\nStarting removal:"
+find . -iname '*conflicted copy*' -print -exec rm "{}" \;
