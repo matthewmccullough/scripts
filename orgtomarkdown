@@ -15,16 +15,21 @@ export HTMLNAME="`echo "$1" | sed 's/$/.html/'`"
 
 # Convert OrgMode to Markdown
 cat "$1" \
+         | sed "s/#\+BEGIN_SRC/<pre><code>/"  \
+         | sed "s/#\+END_SRC/<\/code><\/pre>/"  \
          | sed "s/   :PROPERTIES://"  \
          | sed "s/   :Effort:.*//"  \
          | sed "s/   :END://"  \
-         | sed "s/ ==/\`/"  \
-         | sed "s/== /\`/"  \
+         | sed "s/ =/ \`/"  \
+         | sed "s/= /\` /"  \
+         | sed "s/=\./\`./"  \
+         | sed "s/^=/\`/"  \
+         | sed "s/=$/\`/"  \
          | sed "s/^\* /# /"  \
          | sed "s/^\*\* /## /"  \
-         | sed "s/^\*\*\* /\* /" \
-         | sed "s/^\*\*\*\* /    \* /" \
-         | sed "s/^\*\*\*\*\* /        \* /" > "$MARKDOWNNAME"
+         | sed "s/^\*\*\* /### /" \
+         | sed "s/^\*\*\*\* /\#### /" \
+         | sed "s/^\*\*\*\*\* /\* /" > "$MARKDOWNNAME"
 
 # Convert from Markdown to HTML
 cat "$MARKDOWNNAME" | multimarkdown > "$HTMLNAME"
