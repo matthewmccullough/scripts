@@ -1,0 +1,2 @@
+#!/bin/zsh
+while read N; do openmeta -p "$N"; done < <(find . -iname '*' -d 1)

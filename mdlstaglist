@@ -1,0 +1,2 @@
+#!/bin/zsh
+while read N; do echo "$N"; mdls "$N" | grep "kOMUser" -H -A 1; done < <(find . -iname '*' -d 1)
