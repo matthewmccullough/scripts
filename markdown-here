@@ -1,8 +1,15 @@
 #!/bin/bash
 
+#Ensure we have the quantity specified on the CLI
+if [ -z "$1" ]; then ARG_ERR=ERR; fi
+if [ -n "$ARG_ERR" ];
+then
+    echo "Usage: <markdownfile>"
+    exit
+fi
+
 INPUTFILE="$1"
-OUTPUTFILE=`echo "$INPUTFILE" | sed "s/\.md/\.html/"`
+OUTPUTFILE=`echo "$INPUTFILE" | sed "s/\.md/\.html/" | sed "s/\.markdown/\.html/"`
 
-echo Writing markdown file to \"$OUTPUTFILE\"
-
-markdown.pl "$INPUTFILE" > "$OUTPUTFILE"
+echo Writing \"$INPUTFILE\" file to \"$OUTPUTFILE\"
+multimarkdown -o "$OUTPUTFILE" "$INPUTFILE" 
