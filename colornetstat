@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # colorize netstat output
 color_red=`echo "33[0;31m"`
 color_green=`echo "33[0;32m"`
@@ -7,4 +7,5 @@ color_blue=`echo "33[0;34m"`
 color_purple=`echo "33[0;35m"`
 color_cyan=`echo "33[1;36m"`
 no_color=`echo "33[0m"`
+
 netstat ${@} |sed -e "s/^.* ESTABLISH.*$/${color_green}&${no_color}/; s/^.* LIST.*$/${color_cyan}&${no_color}/; s/^.* *.WAIT$/${color_red}&${no_color}/; s/^.* CLOSING$/${color_red}&${no_color}/; s/^.* SYN.*$/${color_yellow}&${no_color}/; s/^.* FIN.*$/${color_yellow}&${no_color}/; s/^.* *.ACK/${color_yellow}&${no_color}/"
