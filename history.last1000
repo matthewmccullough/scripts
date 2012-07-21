@@ -1,0 +1,3 @@
+#!/bin/sh
+
+history | cut -c 7- | tail -1000 | mate
