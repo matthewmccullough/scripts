@@ -8,22 +8,28 @@
 # finddirtygit
 #   Quiet mode that outputs only the project that is dirty
 # finddirtygit -v
-#   Verbose mode that outputs what files are dirty
+#   Verbose mode that outputs what folders are being tested
+# finddirtygit -vv
+#   Very verbose mode that outputs what files are dirty
 ##############################################################################
 
 # Find all directories that have a .git directory in them
-for gitprojpath in `find . -type d -name .git | sed "s/\/\.git//"`; do
+for gitprojpath in `find . -type d -name .git | sort | sed "s/\/\.git//"`; do
   # Save the current working directory before CDing for git's purpose
   pushd . >/dev/null
 
   # Switch to the git-enabled project directory
+  if [ "$1" = "-v" ]; then
+    echo
+    echo "TESTING:" $gitprojpath
+  fi   
   cd $gitprojpath
   
   # Are there any changed files in the status output?
   isdirty=$(git status -s | grep "^.*")
   if [ -n "$isdirty" ]; then
     # Should output be verbose?
-    if [ "$1" = "-v" ]; then
+    if [ "$1" = "-vv" ]; then
       echo
       echo "DIRTY:" $gitprojpath
       git status -s
