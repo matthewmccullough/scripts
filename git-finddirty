@@ -20,7 +20,6 @@ for gitprojpath in `find . -type d -name .git | sort | sed "s/\/\.git//"`; do
 
   # Switch to the git-enabled project directory
   if [ "$1" = "-v" ]; then
-    echo
     echo "TESTING:" $gitprojpath
   fi   
   cd $gitprojpath
@@ -30,7 +29,6 @@ for gitprojpath in `find . -type d -name .git | sort | sed "s/\/\.git//"`; do
   if [ -n "$isdirty" ]; then
     # Should output be verbose?
     if [ "$1" = "-vv" ]; then
-      echo
       echo "DIRTY:" $gitprojpath
       git status -s
     # Or should output be quiet?
