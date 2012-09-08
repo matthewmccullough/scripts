@@ -3,6 +3,6 @@
 while :
 do
     clear
-	tree
+	tree $*
     sleep 2
 done
