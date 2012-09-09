@@ -13,6 +13,11 @@
 #   Very verbose mode that outputs what files are dirty
 ##############################################################################
 
+# Preserve the old input field separator
+OLDIFS=$IFS
+# Change the input field separator from a space to a null
+IFS=$'\n'
+
 # Find all directories that have a .git directory in them
 for gitprojpath in `find . -type d -name .git | sort | sed "s/\/\.git//"`; do
   # Save the current working directory before CDing for git's purpose
@@ -39,3 +44,6 @@ for gitprojpath in `find . -type d -name .git | sort | sed "s/\/\.git//"`; do
   # Return to the starting directory, suppressing the output
   popd >/dev/null
 done
+
+# restore the input field separator
+IFS=$OLDIFS
