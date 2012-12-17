@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then ARG_ERR=ERR; fi
+if [ -n "$ARG_ERR" ];
+then
+    echo "Usage: <historyline>"
+    return 1
+fi
+
+tail -$1 ~/.zsh_history | cut -c 16- | subl&
