@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo '-------------------------------------------------'
+echo 'Welcome to class on:' `date`
+echo "I'm Matthew McCullough, your instructor "
+echo '-------------------------------------------------'
+echo
+
