@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Turn on the debug (details about hidden disks) menus in Disk Utility
+defaults write com.apple.DiskUtility DUDebugMenuEnabled 1
