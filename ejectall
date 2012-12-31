@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Eject all disks 2 and above.
+# 0 and 1 are typically Macintosh HD and the Recovery Disk 
+diskutil list | grep '/dev/disk[2-9]' | sed 's/\/dev\//diskutil eject /' | sh
+
