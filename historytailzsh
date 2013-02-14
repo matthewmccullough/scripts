@@ -14,7 +14,7 @@ numberoflines=$2
 
 # Tail history
 while [ 1 ]; do
-	clear
-    tail -$numberoflines ~/.zsh_history | sed s/^...............//
+    clear
+    tail -$numberoflines ~/.zsh_history | sed s/^.*\;//
     sleep $sleeptimesecs
 done
