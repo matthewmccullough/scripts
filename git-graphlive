@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#Ensure we have the quantity specified on the CLI
+if [ -z "$1" ]; then ARG_ERR=ERR; fi
+if [ -n "$ARG_ERR" ];
+then
+    echo "Usage: git-graphlive <linecount>"
+    exit
+fi
+
 while :
 do
     clear
