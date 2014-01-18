@@ -1,6 +1,15 @@
 #!/bin/bash
-cd ~/Library/Mail
-echo "#### At the next prompt, type: vacuum subjects;"
-echo "#### Type control D to exit the sqllite prompt"
-sqlite3 Envelope\ Index
+osascript -e 'tell application "Mail" to quit'
+sleep 1
+before=`ls -lah ~/Library/Mail/V2/MailData | grep -E 'Envelope Index$' | awk {'print $5'}`
 
+# do the vacuum
+/usr/bin/sqlite3 ~/Library/Mail/V2/MailData/Envelope\ Index vacuum
+after=`ls -lah ~/Library/Mail/V2/MailData | grep -E 'Envelope Index$' | awk {'print $5'}`
+echo "Mail index before: $before"
+echo "Mail index after: $after"
+echo "Enjoy the new speed!"
+
+osascript -e 'tell application "Mail" to activate'
+sleep 1
+osascript -e 'tell application "System Events" to set visible of application process "Mail" to false'
