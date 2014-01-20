@@ -7,4 +7,7 @@ then
     return 1
 fi
 
-tail -$1 ~/.zsh_history | cut -c 16- | subl&
+tail -$1 ~/.zsh_history | cut -c 16- | pbcopy&
+
+echo The $1 most recent lines of history have been put onto the pasteboard
+
