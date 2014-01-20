@@ -1,8 +1,22 @@
 #!/bin/bash
+numRegex='[0-9]+$'
+usrLen=$1
+usrTime=$2
+defLen=15
+defTime=3
+
+if [[ $usrLen =~ $numRegex && $usrTime =~ $numRegex ]]; then
+    #statements
+else
+    usrLen=$defLen
+    usrTime=$defTime
+fi
 
 while :
 do
     clear
-    git --no-pager log -$1 --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s' --abbrev-commit --date=relative
-    sleep 2
+    git --no-pager log -$usrLen --graph --all --pretty=format:'%Cgreen%h%Creset -%C(yellow)%d%Creset %s' --abbrev-commit --date=relative
+    sleep $usrTime
 done
+
+
