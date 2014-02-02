@@ -6,7 +6,14 @@ if [ -z "$1" ]; then ARG_ERR=ERR; fi
 if [ -n "$ARG_ERR" ];
 then
     echo "Usage: <delayinseconds> <command>"
-    exit
+    exit 1
+fi
+
+# Ensure the command exists
+if ! "$2" 2>/dev/null >/dev/null
+then
+    echo "$2 -> Command not found"
+    exit 2
 fi
 
 delay=$1
