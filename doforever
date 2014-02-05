@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#Ensure we have the quantity specified on the CLI
+# Program finished
+
+trap 'echo "Program finished";exit' 0 1 2 15
+
+# Ensure we have the quantity specified on the CLI
 if [ -z "$2" ]; then ARG_ERR=ERR; fi
 if [ -z "$1" ]; then ARG_ERR=ERR; fi
 if [ -n "$ARG_ERR" ];
