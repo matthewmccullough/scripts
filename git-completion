@@ -76,6 +76,17 @@ __git_ps1 ()
 	fi
 }
 
+# Returns the repo name of the current repository.
+# Produces no output if the cwd is not within a repo
+__git_repo_name()
+{
+	local rn="$(basename `git rev-parse --show-toplevel 2>/dev/null` 2>/dev/null)"
+	if [ -n "$rn" ]; then
+		echo "$rn "
+	fi
+}
+
+
 __gitcomp ()
 {
 	local all c s=$'\n' IFS=' '$'\t'$'\n'
