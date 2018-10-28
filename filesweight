@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# A simple bash script to get a quick peek of the heaviest items in a folder
+# Made by Kiailandi (https://github.com/kiailandi)
+
+sudo du -skh * | sort
